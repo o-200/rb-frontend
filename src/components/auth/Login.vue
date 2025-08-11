@@ -54,7 +54,6 @@ async function handleSubmit() {
 
   try {
     await AuthService.login(form)
-    alert('Login successful!')
     router.push('/')
   } catch (error) {
     console.error('Login failed:', error)

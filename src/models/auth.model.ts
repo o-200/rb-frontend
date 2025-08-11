@@ -9,6 +9,9 @@ export interface LoginData {
   password: string
 }
 
+export interface CurrentUserData {
+  access_token: string
+}
 
 export interface LogOutData {
   access_token: string

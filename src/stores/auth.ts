@@ -1,4 +1,8 @@
 import { defineStore } from 'pinia'
+import { AuthService } from '@/services/auth.service'
+import { router } from '@/router'
+
+let inflight: Promise<boolean> | null = null;
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -22,9 +26,33 @@ export const useAuthStore = defineStore('auth', {
       localStorage.removeItem('token_type')
     },
 
-    autoLogin() {
-      const token = localStorage.getItem('access_token')
-      this.token = token
-    }
+    async autoLogin() {
+      if (this.token) return true;
+
+      const access = localStorage.getItem('access_token');
+      if (access && access !== 'undefined') {
+        this.token = access;
+        AuthService.me(access).catch(() => { /* fall back to refresh later */ });
+        return true;
+      }
+
+      if (!inflight) {
+        inflight = (async () => {
+          const refresh = localStorage.getItem('refresh_token');
+          if (!refresh) return false;
+          try {
+            const tokens = await AuthService.refresh(refresh);
+            this.login(tokens.access_token);
+            return true;
+          } catch {
+            this.logout();
+            return false;
+          } finally {
+            inflight = null;
+          }
+        })();
+      }
+      return inflight;
+    },}
   }
-})
+)

@@ -1,16 +1,19 @@
 import { AuthClient } from '@/services/clients/auth.client'
 import { useAuthStore } from '@/stores/auth'
-import type { RegistrationData, LoginData, TokenData, LogOutData } from '@/models/auth.model'
+
+import type { RegistrationData, LoginData, TokenData, LogOutData, CurrentUserData } from '@/models/auth.model'
 
 export class AuthService {
   static async register(data: RegistrationData): Promise<void> {
     const tokens = await AuthClient.registration(data)
+
     this.authenticate(tokens)
     return tokens
   }
 
   static async login(data: LoginData): Promise<void> {
     const tokens = await AuthClient.login(data)
+
     this.authenticate(tokens)
     return tokens
   }
@@ -19,6 +22,20 @@ export class AuthService {
     await AuthClient.logout(data)
     const auth = useAuthStore()
     auth.logout()
+  }
+
+  static async refresh(refreshToken: string): Promise<TokenData> {
+    const tokens = await AuthClient.refresh(refreshToken);
+
+    this.authenticate(tokens);
+    return tokens;
+  }
+
+  static async current_user(data: CurrentUserData): Promise<void> {
+    const tokens = await AuthClient.get_current_user(data)
+
+    this.authenticate(tokens)
+    return tokens
   }
 
   private static authenticate(tokens: TokenData) {
