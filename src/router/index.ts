@@ -4,6 +4,7 @@ import { useAuthStore } from '@/stores/auth'
 import Home from '@/pages/Home.vue'
 import About from '@/pages/About.vue'
 import Register from '@/components/auth/Register.vue'
+import Dashboard from '@/components/user/Dashboard.vue'
 import Login from '@/components/auth/Login.vue'
 
 const routes = [
@@ -26,6 +27,11 @@ const routes = [
     path: '/register',
     name: 'Register',
     component: Register,
+  },
+  {
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: Dashboard,
   }
 ]
 
